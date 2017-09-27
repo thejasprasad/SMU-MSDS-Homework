@@ -1,0 +1,94 @@
+---
+title: "TPrasad_HW4_Unit4"
+author: "Thejas Prasad"
+date: "9/26/2017"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Assignment Unit 4
+
+
+```{r fivethirtyeight, echo=TRUE }
+
+#Install the fivethirtyeight package
+
+#install.packages("fivethirtyeight")
+
+library(fivethirtyeight)
+
+
+#To see a list of all data sets:
+library(printr)
+
+data(package = "fivethirtyeight")
+
+
+# Assign the 18th data set college_recent_grads to a data frame
+
+delayedAssign("x",college_recent_grads) 
+
+df = data.frame(x)
+
+rm(x)
+
+# To see a more detailed list of all data sets.
+
+# vignette("fivethirtyeight", package = "fivethirtyeight")
+
+# Below is the link to the article which guides you on selecting a college major.The data set is based on this article.
+
+#https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/
+
+
+# Dimensions of this data frame df
+
+dim(df)
+
+# Column names of this data frame df
+
+colnames(df)
+
+# Column names of the data frame df.
+
+colnames(df)
+
+# Counts of the columns in the data frame df.
+
+ncol(df)
+
+# Count of each unique major_category in the data frame and assign it to it to major_count
+
+#install.packages("sqldf")
+library(sqldf)
+
+major_count = data.frame(sqldf("SELECT major_category,COUNT(major_category) as count_major_category FROM df GROUP BY major_category"))
+major_count 
+
+
+# Write CSV in R
+
+write.csv(df, file = "fivethirtyeight.csv", row.names = FALSE)
+
+```
+
+## Including Plots
+
+Barplot of major_count df
+
+```{r fivethirtyeight2, echo=TRUE}
+# Barplot of major_count df
+
+par(las=2)
+barplot(major_count$count_major_category, names = major_count$major_category,
+        xlab = "Category Count", ylab = "Major Category",
+        main = "Major Category Frequency", horiz=TRUE, col ="red",
+        cex.axis = 1, cex.lab=1, axes=TRUE, las = 1,cex.names=0.75)
+```
+
+###End Of the Document
