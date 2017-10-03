@@ -1,0 +1,145 @@
+---
+title: "TPrasad_HW5_Unit5"
+author: "Thejas Prasad"
+date: "10/2/2017"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Assignment Unit 4
+
+Backstory: Your client is expecting a baby soon. However, he is not sure what to name the child. Being out of the loop, he hires you to help him figure out recently popular names. He provides for you raw data in order to help you make a decision. 
+
+File yob2016.txt is a series of popular children’s names born in the year 2016 in the United States. It consists of three columns with a first name, a gender, and the amount of children given that name
+
+File yob2015.txt is similar to yob2016, it contains names, gender, and total children given that name for the year 2015.
+
+Following R code will import the raw data in to R data frames, convert the raw data to a tidy data. Then merge the 2 data frames of years 2016 & 2015 popular names. Finally generates the top 10 girl names and writes it to a .csv file.
+
+
+
+
+```{r babynames, echo = TRUE}
+
+# Import the yob2016.txt raw data file into R and assigne it to a data frame 'df'
+
+yob2016= read.table("yob2016.txt",sep = ";") 
+
+df = data.frame("FirstName" = yob2016$V1, "Gender" = yob2016$V2, "AmountOfChildren" = yob2016$V3)
+
+# Summary of the dataframe 'df'
+
+summary(df)
+
+# Structure of the dataframe 'df'
+
+str(df)
+
+
+
+# Code to identify and display the name which has three y’s at the end of the name. 
+
+library(sqldf)
+redundant_name = (sqldf("SELECT * FROM df WHERE FirstName like '%yyy'"))
+redundant_name 
+
+
+
+# Remove this particular observation ( name which has three y’s at the end of the name), as it’s redundant. Save the remaining dataset as an object: y2016
+
+y2016 = df[df$FirstName != "Fionayyy", ]
+
+str(y2016)
+
+
+
+# Import the file yob2015.txt into R. give the dataframe human-readable column names. Assign this to dataframe to y2015.
+
+yob2015= read.table("yob2015.txt",sep = ",") 
+
+y2015 = data.frame("FirstName" = yob2015$V1, "Gender" = yob2015$V2, "AmountOfChildren" = yob2015$V3)
+
+
+# Display the summary of df.
+summary(y2015)
+
+
+
+# Structure of df
+str(y2015)
+
+
+
+# Interesting facts about the last 10 rows.
+
+tail(y2015, 10)
+
+# All names start with 'Z'
+# All are Male names
+# No of childeren having these names are 5
+
+```
+
+Merge y2016 and y2015 by the Name column, assign it to final.The client only cares about names that have data for both 2016 and 2015, there should be no NA values in either of your amount of children rows after merging.
+
+```{r babynames1, echo = TRUE}
+final = merge(y2016, y2015, by = c("FirstName" , "Gender"), na.rm=TRUE)
+
+
+
+# Create a new column called “Total” in final that adds the amount of children in 2015 and 2016 together. 
+
+final = data.frame (final, "Total" = final$AmountOfChildren.x + final$AmountOfChildren.y)
+
+
+
+# Total number of people who were given popular names in those two years combined
+sum(final$Total)
+
+
+
+# Sort the data by Total.
+
+final_sort = final[order(final$Total, decreasing = TRUE), ]
+
+
+
+# The top 10 most popular names
+final_sort[1:10, c('FirstName')]
+
+```
+
+The client is expecting a girl! Omit boys and give the top 10 most popular girl’s names. Assign this to object girl.
+
+```{r babynames2, echo = TRUE}
+
+girl = final_sort[final_sort$Gender == "F", ]
+
+
+girl_srt = girl[order(girl$Total, decreasing = TRUE), ]
+head(girl_srt$FirstName, 10)
+
+girl_10 = data.frame(head(girl_srt[, c(1,5)], 10))
+
+girl_10
+
+```
+
+Write these top 10 girl Names and their Totals to a CSV file called itsagirl.csv. Do not include row labels. Leave out columns other than Name and Total.
+
+```{r babynames3, echo = TRUE}
+
+write.csv(girl_10 , file = "itsagirl.csv", row.names = FALSE)
+
+```
+
+
+###End Of the Document
+
+
+
